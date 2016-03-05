@@ -36,10 +36,11 @@
 # Note that all settings are set with ?=, this means you can override them
 # from the commandline with "make HARDWARE_MOTHERBOARD=71" for example
 
-# This defined the board you are compiling for (see Configuration.h for the options)
-HARDWARE_MOTHERBOARD ?= 63
+# This defined the board you are compiling for (see boards.h for the options)
+HARDWARE_MOTHERBOARD ?= 11
 
 # Arduino source install directory, and version number
+# On most linuxes this will be /usr/share/arduino
 ARDUINO_INSTALL_DIR  ?= /usr/share/arduino
 ARDUINO_VERSION      ?= 105
 
@@ -49,9 +50,11 @@ AVR_TOOLS_PATH ?=
 #Programmer configuration
 UPLOAD_RATE        ?= 57600
 AVRDUDE_PROGRAMMER ?= arduino
+# on most linuxes this will be /dev/ttyACM0 or /dev/ttyACM1 
 UPLOAD_PORT        ?= /dev/ttyUSB0
 
-#Directory used to build files in, contains all the build files, from object files to the final hex file.
+#Directory used to build files in, contains all the build files, from object files to the final hex file
+#on linux it is best to put an absolute path like /home/username/tmp .
 BUILD_DIR          ?= applet
 
 # This defines whether Liquid_TWI2 support will be built
@@ -95,12 +98,30 @@ MCU              ?= atmega2560
 else ifeq  ($(HARDWARE_MOTHERBOARD),34)
 HARDWARE_VARIANT ?= arduino
 MCU              ?= atmega2560
-
-#Duemilanove w/ ATMega328P pin assignment
-else ifeq  ($(HARDWARE_MOTHERBOARD),4)
+else ifeq  ($(HARDWARE_MOTHERBOARD),35)
 HARDWARE_VARIANT ?= arduino
-HARDWARE_SUB_VARIANT ?= standard
-MCU              ?= atmega328p
+MCU              ?= atmega2560
+else ifeq  ($(HARDWARE_MOTHERBOARD),36)
+HARDWARE_VARIANT ?= arduino
+MCU              ?= atmega2560
+else ifeq  ($(HARDWARE_MOTHERBOARD),38)
+HARDWARE_VARIANT ?= arduino
+MCU              ?= atmega2560
+else ifeq  ($(HARDWARE_MOTHERBOARD),43)
+HARDWARE_VARIANT ?= arduino
+MCU              ?= atmega2560
+else ifeq  ($(HARDWARE_MOTHERBOARD),44)
+HARDWARE_VARIANT ?= arduino
+MCU              ?= atmega2560
+else ifeq  ($(HARDWARE_MOTHERBOARD),45)
+HARDWARE_VARIANT ?= arduino
+MCU              ?= atmega2560
+else ifeq  ($(HARDWARE_MOTHERBOARD),46)
+HARDWARE_VARIANT ?= arduino
+MCU              ?= atmega2560
+else ifeq  ($(HARDWARE_MOTHERBOARD),48)
+HARDWARE_VARIANT ?= arduino
+MCU              ?= atmega2560
 
 #Gen6
 else ifeq  ($(HARDWARE_MOTHERBOARD),5)
@@ -221,7 +242,7 @@ TARGET = $(notdir $(CURDIR))
 VPATH = .
 VPATH += $(BUILD_DIR)
 VPATH += $(HARDWARE_SRC)
-ifeq ($(HARDWARE_VARIANT), arduino)
+ifeq ($(HARDWARE_VARIANT), $(filter $(HARDWARE_VARIANT),arduino Teensy))
 VPATH += $(ARDUINO_INSTALL_DIR)/libraries/LiquidCrystal
 VPATH += $(ARDUINO_INSTALL_DIR)/libraries/SPI
 ifeq ($(LIQUID_TWI2), 1)
@@ -263,10 +284,10 @@ VPATH += $(ARDUINO_INSTALL_DIR)/hardware/teensy/cores/teensy
 endif
 CXXSRC = WMath.cpp WString.cpp Print.cpp Marlin_main.cpp	\
 	MarlinSerial.cpp Sd2Card.cpp SdBaseFile.cpp SdFatUtil.cpp	\
-	SdFile.cpp SdVolume.cpp motion_control.cpp planner.cpp		\
-	stepper.cpp temperature.cpp cardreader.cpp ConfigurationStore.cpp \
-	watchdog.cpp SPI.cpp Servo.cpp Tone.cpp ultralcd.cpp digipot_mcp4451.cpp \
-	vector_3.cpp qr_solve.cpp
+	SdFile.cpp SdVolume.cpp planner.cpp stepper.cpp \
+	temperature.cpp cardreader.cpp configuration_store.cpp \
+	watchdog.cpp SPI.cpp servo.cpp Tone.cpp ultralcd.cpp digipot_mcp4451.cpp \
+	vector_3.cpp qr_solve.cpp buzzer.cpp
 ifeq ($(LIQUID_TWI2), 0)
 CXXSRC += LiquidCrystal.cpp
 else
@@ -351,15 +372,15 @@ LDFLAGS = -lm
 
 # Programming support using avrdude. Settings and variables.
 AVRDUDE_PORT = $(UPLOAD_PORT)
-AVRDUDE_WRITE_FLASH = -U flash:w:$(BUILD_DIR)/$(TARGET).hex:i
+AVRDUDE_WRITE_FLASH = -Uflash:w:$(BUILD_DIR)/$(TARGET).hex:i
 ifeq ($(shell uname -s), Linux)
 AVRDUDE_CONF = /etc/avrdude/avrdude.conf
 else
 AVRDUDE_CONF = $(ARDUINO_INSTALL_DIR)/hardware/tools/avr/etc/avrdude.conf
 endif
-AVRDUDE_FLAGS = -D -C $(AVRDUDE_CONF) \
-	-p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) \
-	-b $(UPLOAD_RATE)
+AVRDUDE_FLAGS = -D -C$(AVRDUDE_CONF) \
+	-p$(MCU) -P$(AVRDUDE_PORT) -c$(AVRDUDE_PROGRAMMER) \
+	-b$(UPLOAD_RATE)
 
 # Define all object files.
 OBJ = ${patsubst %.c, $(BUILD_DIR)/%.o, ${SRC}}
