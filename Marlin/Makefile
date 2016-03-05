@@ -37,19 +37,19 @@
 # from the commandline with "make HARDWARE_MOTHERBOARD=71" for example
 
 # This defined the board you are compiling for (see Configuration.h for the options)
-HARDWARE_MOTHERBOARD ?= 11
+HARDWARE_MOTHERBOARD ?= 63
 
 # Arduino source install directory, and version number
-ARDUINO_INSTALL_DIR  ?= /Applications/Arduino.app/Contents/Resources/Java
+ARDUINO_INSTALL_DIR  ?= /usr/share/arduino
 ARDUINO_VERSION      ?= 105
 
 # You can optionally set a path to the avr-gcc tools. Requires a trailing slash. (ex: /usr/local/avr-gcc/bin)
 AVR_TOOLS_PATH ?=
 
 #Programmer configuration
-UPLOAD_RATE        ?= 115200
+UPLOAD_RATE        ?= 57600
 AVRDUDE_PROGRAMMER ?= arduino
-UPLOAD_PORT        ?= /dev/arduino
+UPLOAD_PORT        ?= /dev/ttyUSB0
 
 #Directory used to build files in, contains all the build files, from object files to the final hex file.
 BUILD_DIR          ?= applet
@@ -353,7 +353,7 @@ LDFLAGS = -lm
 AVRDUDE_PORT = $(UPLOAD_PORT)
 AVRDUDE_WRITE_FLASH = -U flash:w:$(BUILD_DIR)/$(TARGET).hex:i
 ifeq ($(shell uname -s), Linux)
-AVRDUDE_CONF = $(ARDUINO_INSTALL_DIR)/hardware/tools/avrdude.conf
+AVRDUDE_CONF = /etc/avrdude/avrdude.conf
 else
 AVRDUDE_CONF = $(ARDUINO_INSTALL_DIR)/hardware/tools/avr/etc/avrdude.conf
 endif
