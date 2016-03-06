@@ -37,7 +37,7 @@
 # from the commandline with "make HARDWARE_MOTHERBOARD=71" for example
 
 # This defined the board you are compiling for (see boards.h for the options)
-HARDWARE_MOTHERBOARD ?= 69
+HARDWARE_MOTHERBOARD ?= 66
 
 # Arduino source install directory, and version number
 # On most linuxes this will be /usr/share/arduino
