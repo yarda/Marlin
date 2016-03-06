@@ -54,6 +54,8 @@
   #include "pins_SANGUINOLOLU_12.h"
 #elif MB(MELZI)
   #include "pins_MELZI.h"
+#elif MB(MELZI2)
+  #include "pins_MELZI2.h"
 #elif MB(STB_11)
   #include "pins_STB_11.h"
 #elif MB(AZTEEG_X1)

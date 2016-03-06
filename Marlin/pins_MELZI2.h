@@ -1,5 +1,5 @@
 /**
- * Melzi with ATmega1284 (MaKr3d version) pin assignments
+ * Melzi 2.0 with ATmega1284 pin assignments
  */
 
 #undef MOTHERBOARD
